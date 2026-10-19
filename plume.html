@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Who Breathes It — Protect Inola</title>
+<meta name="description" content="Explore the original interactive plume illustration with synthetic wind, pollutant views, and OPA’s reported September proposal. Not a prediction of exposure or health risk." />
+<link rel="canonical" href="https://protectinola.com/dispersion.html" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Protect Inola" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:url" content="https://protectinola.com/dispersion.html" />
+<meta property="og:title" content="Who Breathes It — Protect Inola" />
+<meta property="og:description" content="Explore the original interactive plume illustration with synthetic wind, pollutant views, and OPA’s reported September proposal. Not a prediction of exposure or health risk." />
+<meta property="og:image" content="https://protectinola.com/opengraph-image" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Protect Inola — Stop the Smelter" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Who Breathes It — Protect Inola" />
+<meta name="twitter:description" content="Explore the original interactive plume illustration with synthetic wind, pollutant views, and OPA’s reported September proposal. Not a prediction of exposure or health risk." />
+<meta name="twitter:image" content="https://protectinola.com/opengraph-image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#F2EDE1;color:#1E1C17;font-family:Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:#4C6B45;text-decoration:none}
+  a:hover{color:#C25230}
+  ::selection{background:#C25230;color:#FBF8F1}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400}
+
+  /* ---- dark map stage ---- */
+  #stage{position:relative;background:#0E1110;color:#EFE9DC;scroll-margin-top:72px}
+  #map{position:absolute;inset:0;background:#0E1110}
+  #map .leaflet-tile-pane{filter:invert(1) hue-rotate(185deg) brightness(.72) saturate(.26) contrast(.86)}
+  #map .leaflet-tile{opacity:1 !important}
+  #fx{position:absolute;inset:0;pointer-events:none;z-index:450}
+  .leaflet-container{background:#0E1110;font-family:Archivo,system-ui,sans-serif}
+  .leaflet-control-attribution{background:rgba(14,17,16,.8)!important;color:#7C7669!important;font-size:9.5px!important}
+  .leaflet-control-attribution a{color:#9E978A!important}
+  .leaflet-control-zoom a{background:rgba(14,17,16,.9)!important;color:#EFE9DC!important;border-color:rgba(239,233,220,.2)!important}
+
+  .pill{font-family:Archivo,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+    background:rgba(14,17,16,.82);color:#EFE9DC;border:1px solid rgba(239,233,220,.28);
+    padding:2px 6px;border-radius:2px;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+  .pill::before{display:none!important}
+  .pill-site{background:#C25230;border-color:#E8B98F;color:#FFF;font-weight:800;letter-spacing:.08em}
+  .pill-school{border-color:#C25230;color:#F0A88A}
+  .pill-wild{border-color:#6DB3C4;color:#9FD3DE}
+  .pill-far{border-color:rgba(239,233,220,.18);color:#A8A296;font-weight:600}
+
+  /* ---- controls ---- */
+  .dpanel{background:rgba(20,24,22,.92);border:1px solid rgba(239,233,220,.16)}
+  .dhead{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:#8A8375;padding:10px 14px;border-bottom:1px solid rgba(239,233,220,.13)}
+  .tierbtn{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
+    background:transparent;border:0;border-bottom:1px solid rgba(239,233,220,.10);padding:11px 14px;color:#A8A296;
+    font-family:Archivo,sans-serif;transition:background .15s,color .15s}
+  .tierbtn:hover{background:rgba(239,233,220,.05)}
+  .tierbtn[aria-pressed="true"]{background:rgba(239,233,220,.09);color:#EFE9DC}
+  .tierbtn .sw{width:10px;height:10px;border-radius:50%;flex:none;margin-top:4px}
+  .tierbtn .t{font-size:12.5px;font-weight:800;letter-spacing:.02em;display:block}
+  .tierbtn .s{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7669;display:block;margin-top:3px}
+  .tierbtn[aria-pressed="true"] .s{color:#9E978A}
+
+  .tog{display:flex;align-items:center;gap:9px;cursor:pointer;color:#A8A296;padding:5px 0;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase}
+  .tog input{accent-color:#C25230;margin:0}
+  .tog.on{color:#EFE9DC}
+
+  .tbtn{appearance:none;background:transparent;border:1px solid rgba(239,233,220,.22);color:#A8A296;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;padding:5px 8px;cursor:pointer}
+  .tbtn:hover{color:#EFE9DC;border-color:rgba(239,233,220,.5)}
+  .tbtn.on{background:#EFE9DC;color:#14170F;border-color:#EFE9DC;font-weight:600}
+  .playbtn{appearance:none;background:#C25230;border:0;color:#FBF8F1;width:38px;height:38px;font-size:14px;cursor:pointer;flex:none}
+  .playbtn:hover{background:#E8B98F;color:#1E1C17}
+
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+    background:#C25230;color:#FBF8F1;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;flex:none}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ---- shared site nav (mirrors <SiteNav /> from the React pages) ---- */
+  .pi-nav-bar{position:sticky;top:0;z-index:1200;background:rgba(242,237,225,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(30,28,23,.12)}
+  .pi-nav-inner{max-width:1240px;margin:0 auto;padding:0 24px;min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .pi-nav-brand{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1E1C17;text-decoration:none;white-space:nowrap}
+  .pi-nav-brand:hover{color:#1E1C17}
+  .pi-nav-links{display:flex;align-items:center;gap:28px}
+  .pi-nav-link{display:inline-flex;align-items:center;font-size:13.5px;font-weight:600;text-decoration:none;color:#4A443A;padding:4px 0;white-space:nowrap}
+  .pi-nav-link[data-active='true']{color:#1E1C17;box-shadow:inset 0 -2px 0 0 #C25230}
+  .pi-nav-link:hover{color:#1E1C17}
+  .pi-nav-cta{background:#C25230;color:#FBF8F1;font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:10px 20px;border-radius:2px;text-decoration:none;white-space:nowrap}
+  .pi-nav-cta:hover{background:#E8B98F;color:#1E1C17}
+  .pi-nav-toggle{display:none;align-items:center;justify-content:center;width:42px;height:42px;margin-right:-8px;border:none;background:transparent;color:#1E1C17;cursor:pointer}
+  .pi-nav-mobile{display:none;flex-direction:column;padding:8px 24px 20px;border-top:1px solid rgba(30,28,23,.12);background:rgba(242,237,225,.96)}
+  .pi-nav-mobile a{font-size:16px;font-weight:600;text-decoration:none;color:#4A443A;padding:14px 0;border-bottom:1px solid rgba(30,28,23,.08)}
+  .pi-nav-mobile a[data-active='true']{color:#C25230}
+  .pi-nav-mobile .pi-nav-mobile-cta{margin-top:16px;background:#C25230;color:#FBF8F1;font-size:13px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;text-align:center;padding:14px 20px;border-radius:2px;border-bottom:none}
+
+  @media (max-width:860px){
+    .pi-nav-links,.pi-nav-bar .pi-nav-cta{display:none}
+    .pi-nav-toggle{display:inline-flex}
+    .pi-nav-mobile[data-open='true']{display:flex}
+    #stage{grid-template-columns:1fr !important;height:auto !important;min-height:0 !important}
+    .stage-map{height:68vh;min-height:420px}
+    .stage-side{border-left:none;border-top:1px solid rgba(239,233,220,.16)}
+    .stage-timeline{flex-wrap:wrap;gap:10px;padding:10px 12px 12px}
+    .stage-timeline .playbtn{order:0}
+    .stage-timeline > div:nth-child(4){flex:1 1 100%;min-width:0;order:3}
+  }
+</style>
+<style>html,body{height:100%;overflow:hidden}#stage{height:100vh !important;min-height:0 !important}</style>
+</head><body>
+<section id="stage" style="height:min(86vh,860px);min-height:640px;display:grid;grid-template-columns:minmax(0,1fr) 340px">
+  <div class="stage-map" style="position:relative;overflow:hidden">
+    <div id="map"></div>
+    <canvas id="fx"></canvas>
+
+    <div class="dpanel" style="position:absolute;left:16px;top:16px;z-index:600;width:250px;pointer-events:none">
+      <div class="dhead" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <span id="tierLbl">Tier I · Local · Fluoride</span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#C25230;animation:blink 2.6s infinite;flex:none"></span>
+      </div>
+      <div style="padding:12px 14px">
+        <div class="serif" id="tierNum" style="font-size:34px;line-height:.95;color:#E8B98F">0.64 lb / t Al</div>
+        <div class="mono" id="tierRange" style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#8A8375;margin-top:7px;line-height:1.6">Proposed potline cap · 37% lower</div>
+      </div>
+    </div>
+
+    <div class="dpanel" style="position:absolute;right:16px;bottom:78px;z-index:600;padding:11px 13px;pointer-events:none">
+      <div class="mono" style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8A8375;margin-bottom:8px">Annual illustration · Not current wind</div>
+      <div id="legend" style="display:flex;flex-direction:column;gap:6px;font-size:10.5px;color:#BDB6A8"></div>
+    </div>
+
+    <!-- timeline -->
+    <div class="stage-timeline" style="position:absolute;left:0;right:0;bottom:0;z-index:600;background:rgba(14,17,16,.94);border-top:1px solid rgba(239,233,220,.16);
+                display:flex;align-items:center;gap:14px;padding:10px 16px">
+      <button class="playbtn" id="playBtn" aria-label="Pause the year">❚❚</button>
+      <div style="display:flex;gap:4px">
+        <button class="tbtn" data-sp="1">1×</button>
+        <button class="tbtn" data-sp="6">6×</button>
+        <button class="tbtn on" data-sp="24">24×</button>
+        <button class="tbtn" data-sp="120">120×</button>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div class="mono" id="tlDate" aria-label="Synthetic wind simulation date" style="font-size:12px;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#EFE9DC;margin-bottom:6px">Jan 1 · 00:00 · Day 1 / 365</div>
+        <div id="tlRail" style="height:4px;background:rgba(239,233,220,.16);cursor:pointer;position:relative">
+          <div id="tlFill" style="position:absolute;left:0;top:0;bottom:0;width:0;background:#C25230"></div>
+        </div>
+      </div>
+      <button class="tbtn" id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="stage-side" style="background:#141816;border-left:1px solid rgba(239,233,220,.16);display:flex;flex-direction:column;overflow-y:auto">
+    <div class="dhead" style="display:flex;gap:9px;align-items:center"><span class="step-num">1</span> What the stack emits</div>
+    <div id="tierBtns"></div>
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(239,233,220,.13)">
+      <p id="tierBody" style="margin:0;font-size:12.5px;line-height:1.6;color:#BDB6A8"></p>
+      <div class="mono" id="tierCite" style="font-size:9px;letter-spacing:.08em;color:#7C7669;margin-top:11px;padding-top:10px;border-top:1px solid rgba(239,233,220,.13);line-height:1.6"></div>
+    </div>
+
+    <details style="padding:14px;border-top:1px solid rgba(239,233,220,.13);font-size:12px;line-height:1.6;color:#BDB6A8">
+      <summary style="cursor:pointer;color:#EFE9DC">Facility specifications · supplied graphic</summary>
+      <p>The supplied Protect Inola graphic cites the September 3, 2026 PSD application, Tables 2.1-1, B-1 and B-2, for:</p>
+      <ul style="padding-left:18px">
+        <li>Two primary GTC stacks: 65 m (213 ft) each.</li>
+        <li>Two potroom buildings; 484 pots total.</li>
+        <li>Average potline building height: 13.845 m (45.4 ft); average length: 800 m (2,625 ft).</li>
+        <li>Other stack/release heights: 57, 52, 25, 15, 10 and 5 m.</li>
+      </ul>
+      <p>These numbers are transcribed from the graphic, not independently verified against the tables here. DEQ lists the corrected September 3 application as under technical review. <a href="https://applications.deq.ok.gov/PermitsPublicReview/permitinformation.aspx?id=1072402" target="_blank" rel="noopener noreferrer" style="text-decoration:underline">Official application and supporting documents</a>.</p>
+      <p><strong>No zone resizing is justified by these dimensions alone.</strong> Stack-specific emission rates, exhaust temperature and velocity, stack diameters and coordinates, building downwash, terrain, meteorology, and modeled concentrations are needed. The current bands remain illustrative and are not calculated from these dimensions or the 0.64 lb/t proposal.</p>
+    </details>
+
+    <div class="dhead" style="display:flex;gap:9px;align-items:center;border-top:1px solid rgba(239,233,220,.13)"><span class="step-num">2</span> Simulated wind · Not live</div>
+    <div style="padding:12px 14px">
+      <div style="display:flex;gap:14px;align-items:center">
+        <svg id="rose" viewBox="-52 -52 104 104" width="104" height="104" style="flex:none"></svg>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7669">From</span><span class="mono" id="wDir" style="font-size:11px;color:#EFE9DC">—</span></div>
+          <div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7669">Speed</span><span class="mono" id="wSpd" style="font-size:11px;color:#EFE9DC">—</span></div>
+          <div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7669">Downwind</span><span class="mono" id="wTo" style="font-size:11px;color:#E8B98F">—</span></div>
+          <div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7669">Year done</span><span class="mono" id="wPct" style="font-size:11px;color:#EFE9DC">0%</span></div>
+        </div>
+      </div>
+      <p style="margin:11px 0 0;font-size:11.5px;line-height:1.55;color:#8A8375">Wind is named for where it comes FROM: north wind carries smoke SOUTH. Petals show whole-year synthetic transport directions; the white needle and smoke show the current downwind direction. Smoke instantly realigns when the wind changes; it is not a history of released particles. Colored bands are fixed annual illustrations, not the current plume or exposure zones.</p>
+    </div>
+
+    <div class="dhead" style="display:flex;gap:9px;align-items:center;border-top:1px solid rgba(239,233,220,.13)"><span class="step-num">3</span> Simulated school-bearing hours</div>
+    <div style="padding:12px 14px">
+      <div class="serif" id="hoursOut" style="font-size:40px;line-height:.95;color:#E8B98F">0</div>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#7C7669;margin-top:6px">synthetic hours · not exposure</div>
+      <p style="margin:10px 0 0;font-size:11.5px;line-height:1.55;color:#8A8375">Counts synthetic wind directions within 25° of the approximate school bearing. It does not calculate plume arrival, concentrations, or actual school exposure.</p>
+    </div>
+
+    <div class="dhead" style="display:flex;gap:9px;align-items:center;border-top:1px solid rgba(239,233,220,.13)"><span class="step-num">4</span> Layers</div>
+    <div style="padding:10px 14px 18px">
+      <label class="tog on"><input type="checkbox" id="tgCloud" checked /> Smoke plume</label>
+      <label class="tog on"><input type="checkbox" id="tgZones" checked /> Illustrative bands</label>
+      <label class="tog on"><input type="checkbox" id="tgLabels" checked /> Place names</label>
+    </div>
+  </aside>
+</section>
+
+<!-- TIER EXPLAINER -->
+<script>
+(function () {
+'use strict';
+
+/* ============ constants ============ */
+var SMELTER = { lat: 36.1184, lon: -95.5605 };
+var SCHOOL  = { lat: 36.1486, lon: -95.5081 };
+
+var RECEPTORS = [
+  { kind:'site',   name:'PROPOSED SMELTER',                       lat:36.1184, lon:-95.5605, z:[4,20], dir:'bottom' },
+  { kind:'school', name:'Inola Schools · 1,379 students',          lat:36.1486, lon:-95.5081, z:[11,20] },
+  { kind:'town',   name:'Inola · 3.6 mi · pop 1,898',              lat:36.1517, lon:-95.5078, z:[9,20] },
+  { kind:'town',   name:'Claremore · 11 mi · 19,500',              lat:36.2731, lon:-95.6181, z:[8,20] },
+  { kind:'town',   name:'Catoosa · 11 mi · 7,900',                 lat:36.1892, lon:-95.7469, z:[10,20] },
+  { kind:'town',   name:'Chouteau · 12 mi · 2,100',                lat:36.1834, lon:-95.3419, z:[10,20] },
+  { kind:'town',   name:'Wagoner · 16 mi · 8,900',                 lat:35.9598, lon:-95.3697, z:[9,20] },
+  { kind:'town',   name:'Coweta · 14 mi · 10,000',                 lat:35.9540, lon:-95.6547, z:[9,20] },
+  { kind:'town',   name:'Pryor Creek · 18 mi · 9,500',             lat:36.3081, lon:-95.3169, z:[9,20] },
+  { kind:'town',   name:'Broken Arrow · 14 mi · 118,000',          lat:36.0526, lon:-95.7969, z:[8,20] },
+  { kind:'town',   name:'Owasso · 20 mi · 39,000',                 lat:36.2695, lon:-95.8547, z:[10,20] },
+  { kind:'town',   name:'Tulsa · 24 mi · 411,000',                 lat:36.1500, lon:-95.9928, z:[7,20] },
+  { kind:'town',   name:'Muskogee · 30 mi · 36,000',               lat:35.7479, lon:-95.3697, z:[8,20] },
+  { kind:'wild',   name:'Upper Buffalo Wilderness',                lat:35.8869, lon:-93.0700, z:[5,8] },
+  { kind:'wild',   name:'Hercules-Glades Wilderness',              lat:36.6831, lon:-93.2185, z:[5,8] },
+  { kind:'wild',   name:'Caney Creek Wilderness',                  lat:34.6111, lon:-94.0297, z:[5,8] },
+  { kind:'far',    name:'Fayetteville · 76 mi',                    lat:36.0626, lon:-94.1574, z:[6,8] },
+  { kind:'far',    name:'Joplin · 88 mi',                          lat:37.0842, lon:-94.5133, z:[6,8] },
+  { kind:'far',    name:'Springfield MO · 147 mi',                 lat:37.2090, lon:-93.2923, z:[5,7] },
+  { kind:'far',    name:'Little Rock · 207 mi',                    lat:34.7465, lon:-92.2896, z:[4,6] },
+  { kind:'far',    name:'Memphis · 317 mi',                        lat:35.1495, lon:-90.0490, z:[4,6] },
+  { kind:'far',    name:'St. Louis · 341 mi',                      lat:38.6270, lon:-90.1994, z:[4,6] }
+];
+
+var TIERS = {
+  1: {
+    key:'1', label:'Tier I · Local · Fluoride', num:'0.64 lb / t Al',
+    range:'Proposed potline cap · 37% lower',
+    body:'September 3 OPA update, as reported by KJRH: proposed potline fluoride emissions capped at 0.64 lb per metric ton of aluminum produced, 37% below the original proposal. This is an emission rate per unit of production, not a whole-facility annual total or an ambient concentration. Proposal status is not permit approval. The synthetic wind, plume size, and bands are not calculated from this rate and do not predict exposure.',
+    cite:'Revised proposal: <a href="https://www.kjrh.com/news/local-news/inola-aluminum-smelter-fight-court-grants-drummond-motion-petitions-ruled-on" target="_blank" rel="noopener noreferrer">KJRH, September 3, 2026</a> · <a href="https://oklahoma.gov/deq/aluminum-smelter-inola.html" target="_blank" rel="noopener noreferrer">DEQ review status</a>',
+    accent:'#C25230', hot:'#FFD86B', warm:'#F0913A',
+    view:[[36.20,-95.50], 9],
+    bands:[
+      { km:60,  minR:0.55, exp:0.65, color:'#B4652A', op:0.16, dash:'6 5', label:'Illustrative outer band · 60 km' },
+      { km:30,  minR:0.60, exp:0.60, color:'#D08A28', op:0.22, dash:null,  label:'Illustrative band · 30 km' },
+      { km:15,  minR:0.65, exp:0.55, color:'#E07A28', op:0.26, dash:null,  label:'Illustrative band · 15 km' },
+      { km:8,   minR:0.70, exp:0.50, color:'#E05A24', op:0.30, dash:null,  label:'Illustrative band · 8 km' },
+      { km:4,   minR:0.75, exp:0.45, color:'#D03A1C', op:0.34, dash:null,  label:'Illustrative band · 4 km' },
+      { km:1.8, minR:0.80, exp:0.40, color:'#B02010', op:0.42, dash:null,  label:'Illustrative band · 1.8 km' }
+    ],
+    field:{ near:22, tailAmp:0.06, tailLen:180, span:4.2, cut:420, reach:30,
+            c0:'255,216,107', c1:'240,145,58', c2:'196,82,48' },
+    particle:'232,185,143'
+  },
+  2: {
+    key:'2', label:'Tier II · Regional · SO₂ &amp; NOx', num:'Separate review',
+    range:'Illustrative regional scale',
+    body:'Sulfur and nitrogen oxides can contribute to secondary particles and regional haze. The September potline fluoride update does not establish revised SO₂ or NOx totals. This view is not a prediction that emissions will reach a specific wilderness area or community.',
+    cite:'EPA AP-42 · Acid Rain Program · ODEQ PSD permitting · Regional Haze Rule',
+    accent:'#8B7FB8', hot:'#C9B8F0', warm:'#8B7FB8',
+    view:[[36.6,-94.2], 6],
+    bands:[
+      { km:800, minR:0.55, exp:0.55, color:'#5E4E8C', op:0.14, dash:'6 5', label:'Illustrative band · 800 km' },
+      { km:420, minR:0.55, exp:0.55, color:'#6B58A0', op:0.17, dash:null,  label:'420 km' },
+      { km:220, minR:0.55, exp:0.55, color:'#7A63B4', op:0.20, dash:null,  label:'220 km' },
+      { km:110, minR:0.58, exp:0.55, color:'#8B6FC8', op:0.24, dash:null,  label:'110 km' },
+      { km:50,  minR:0.62, exp:0.55, color:'#9C7BD8', op:0.28, dash:null,  label:'Illustrative band · 50 km' },
+      { km:18,  minR:0.68, exp:0.50, color:'#B084E8', op:0.34, dash:null,  label:'18 km' }
+    ],
+    field:{ near:140, tailAmp:0.14, tailLen:700, span:14, cut:1400, reach:420,
+            c0:'201,184,240', c1:'139,127,184', c2:'88,74,140' },
+    particle:'176,164,220'
+  },
+  3: {
+    key:'3', label:'Tier III · Global · PFCs', num:'10,000+ yrs',
+    range:'Long-lived gases · Illustrative scale',
+    body:'CF₄ and C₂F₆ can be released during anode effects and have atmospheric lifetimes of thousands of years. Their persistence is not evidence of the geographic reach of this drawn plume. September’s potline fluoride proposal does not establish a revised PFC estimate.',
+    cite:'IPCC AR6 · EPA F-Gas Partnership · Mühle et al., Atmos. Chem. Phys. 2010',
+    accent:'#6DB3C4', hot:'#B8E6F0', warm:'#6DB3C4',
+    view:[[37.0,-94.0], 4],
+    bands:[
+      { km:5000, minR:0.80, exp:0.35, color:'#3E8496', op:0.13, dash:'6 5', label:'Well-mixed hemisphere' },
+      { km:2000, minR:0.85, exp:0.30, color:'#4A96AA', op:0.15, dash:null,  label:'2,000 km' },
+      { km:700,  minR:0.88, exp:0.25, color:'#57A6BA', op:0.17, dash:null,  label:'700 km' },
+      { km:200,  minR:0.90, exp:0.20, color:'#6DB3C4', op:0.20, dash:null,  label:'200 km' }
+    ],
+    field:{ near:2600, tailAmp:0.30, tailLen:9000, span:34, cut:5200, reach:2000,
+            c0:'184,230,240', c1:'109,179,196', c2:'62,132,150' },
+    particle:'150,210,224'
+  }
+};
+
+/* ============ seeded synthetic year of wind ============ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+var rng = mulberry32(20260801);
+var HOURS = 365 * 24;
+var WIND = new Array(HOURS);
+(function genWind(){
+  var frontHr = 168 + Math.floor(rng()*72), inFront = 0;
+  for (var i=0;i<HOURS;i++){
+    var hr=i%24, day=Math.floor(i/24);
+    var diurn = 0.55 + 0.45*Math.sin(((hr-3)/24)*2*Math.PI - Math.PI/2);
+    var season = Math.sin((day/365)*2*Math.PI);
+    var dirFrom, speed;
+    if (i>=frontHr && inFront===0){ inFront = 18 + Math.floor(rng()*18); }
+    if (inFront>0){
+      dirFrom = 340 + (rng()*40 - 20);
+      speed = (4 + rng()*4)*(0.7+0.3*diurn);
+      inFront--;
+      if (inFront===0) frontHr = i + (season<0 ? 120 : 240) + Math.floor(rng()*72);
+    } else {
+      var r=rng();
+      if (season > 0.3){
+        if (r<0.55) dirFrom = 180 + (rng()*40-20);
+        else if (r<0.75) dirFrom = 150 + rng()*30;
+        else if (r<0.88) dirFrom = 210 + rng()*30;
+        else dirFrom = rng()*360;
+      } else if (season < -0.3){
+        if (r<0.35) dirFrom = 200 + (rng()*30-15);
+        else if (r<0.50) dirFrom = 350 + (rng()*40-20);
+        else if (r<0.65) dirFrom = 270 + (rng()*40-20);
+        else if (r<0.80) dirFrom = 310 + rng()*30;
+        else if (r<0.92) dirFrom = 230 + rng()*40;
+        else dirFrom = rng()*360;
+      } else {
+        if (r<0.40) dirFrom = 200 + (rng()*30-15);
+        else if (r<0.55) dirFrom = 160 + rng()*30;
+        else if (r<0.70) dirFrom = 270 + (rng()*50-25);
+        else if (r<0.82) dirFrom = 340 + (rng()*50-25);
+        else dirFrom = rng()*360;
+      }
+      speed = (3+rng()*5)*(0.5+0.5*diurn) + 1.5;
+    }
+    WIND[i] = { dirFrom: ((dirFrom%360)+360)%360, speed: speed };
+  }
+})();
+
+var ROSE = (function(){
+  var s = new Array(16).fill(0);
+  for (var i=0;i<HOURS;i++){
+    var to = transportBearing(WIND[i].dirFrom);
+    s[Math.floor((to+11.25)/22.5)%16] += WIND[i].speed;
+  }
+  var m = Math.max.apply(null, s);
+  return s.map(function(v){ return v/m; });
+})();
+
+function roseAt(bearingDeg){
+  var sec = (bearingDeg/22.5) + 0.5;
+  var i0 = Math.floor(sec)%16, i1 = (i0+1)%16, t = sec - Math.floor(sec);
+  if (i0 < 0) i0 += 16;
+  return ROSE[i0]*(1-t) + ROSE[i1]*t;
+}
+
+/* ============ geo helpers ============ */
+var D2R = Math.PI/180, R2D = 180/Math.PI, RE = 6371;
+function lobePolygon(maxKm, minRatio, points, exponent){
+  var pts = [], lat1 = SMELTER.lat*D2R, lon1 = SMELTER.lon*D2R;
+  for (var i=0;i<points;i++){
+    var bearing = (i/points)*360;
+    var v = Math.pow(roseAt(bearing), exponent);
+    var r = maxKm * (minRatio + (1-minRatio)*v);
+    var br = bearing*D2R, d = r/RE;
+    var la = Math.asin(Math.sin(lat1)*Math.cos(d) + Math.cos(lat1)*Math.sin(d)*Math.cos(br));
+    var lo = lon1 + Math.atan2(Math.sin(br)*Math.sin(d)*Math.cos(lat1), Math.cos(d)-Math.sin(lat1)*Math.sin(la));
+    pts.push([la*R2D, lo*R2D]);
+  }
+  return pts;
+}
+function destKm(lat, lon, bearingDeg, km){
+  var lat1=lat*D2R, lon1=lon*D2R, br=bearingDeg*D2R, d=km/RE;
+  var la = Math.asin(Math.sin(lat1)*Math.cos(d) + Math.cos(lat1)*Math.sin(d)*Math.cos(br));
+  var lo = lon1 + Math.atan2(Math.sin(br)*Math.sin(d)*Math.cos(lat1), Math.cos(d)-Math.sin(lat1)*Math.sin(la));
+  return [la*R2D, lo*R2D];
+}
+function bearingBetween(aLat,aLon,bLat,bLon){
+  var dy=(bLat-aLat)*111.32, dx=(bLon-aLon)*111.32*Math.cos(aLat*D2R);
+  return (Math.atan2(dx,dy)*R2D + 360) % 360;
+}
+function angDiff(a,b){ return Math.abs(((a-b)%360+540)%360-180); }
+
+/* ============ map ============ */
+var map = L.map('map', { zoomControl:false, preferCanvas:true, worldCopyJump:false, minZoom:3, maxZoom:18, fadeAnimation:false })
+  .setView(TIERS[1].view[0], TIERS[1].view[1]);
+L.control.zoom({ position:'topright' }).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:18, attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+var zoneGroups = {};
+Object.keys(TIERS).forEach(function(k){
+  var t = TIERS[k], g = L.layerGroup();
+  t.bands.forEach(function(b){
+    L.polygon(lobePolygon(b.km, b.minR, 200, b.exp), {
+      color:b.color, weight:b.dash?1.4:1.8, opacity:0.85, dashArray:b.dash || null,
+      fillColor:b.color, fillOpacity:b.op, interactive:false, smoothFactor:0
+    }).addTo(g);
+  });
+  zoneGroups[k] = g;
+});
+
+var markerLayer = L.layerGroup().addTo(map);
+var RM = RECEPTORS.map(function(r){
+  var isSite = r.kind === 'site';
+  var m = L.circleMarker([r.lat, r.lon], {
+    radius: isSite ? 7 : (r.kind==='far' ? 3.5 : 5), weight:1.5, color:'#0E1110',
+    fillColor: isSite ? '#C25230' : r.kind==='school' ? '#E8724A' : r.kind==='wild' ? '#6DB3C4' : r.kind==='far' ? '#8A8375' : '#E8B98F',
+    fillOpacity:1, interactive:false
+  });
+  var TDIR = { right:[8,0], left:[-8,0], top:[0,-10], bottom:[0,10] };
+  var td = r.dir || 'right';
+  m.bindTooltip(isSite ? '⚠ PROPOSED SMELTER' : r.name, {
+    permanent:true, direction:td, offset:TDIR[td],
+    className:'pill pill-' + (isSite?'site':r.kind)
+  });
+  return { m:m, r:r };
+});
+var showLabels = true;
+var PRI = { site:0, school:1, wild:5, far:6 };
+function priOf(r){
+  if (PRI[r.kind] !== undefined) return PRI[r.kind];
+  return r.name.indexOf('Tulsa') === 0 ? 2 : r.name.indexOf('Inola') === 0 ? 2 : 3;
+}
+function declutter(){
+  var placed = [];
+  // overlay chrome is off-limits: labels must never draw under the panels or the timeline
+  document.querySelectorAll('#stage .dpanel, #stage .leaflet-control-zoom, #stage .leaflet-control-attribution').forEach(function(el){
+    var r = el.getBoundingClientRect();
+    if (r.width) placed.push({ left:r.left, right:r.right, top:r.top, bottom:r.bottom });
+  });
+  RM.slice().sort(function(a,b){ return priOf(a.r) - priOf(b.r); }).forEach(function(o){
+    var tip = o.m.getTooltip();
+    var el = tip && tip.getElement();
+    if (!el) return;
+    if (!markerLayer.hasLayer(o.m)) { el.style.display = 'none'; return; }
+    el.style.display = '';
+    var r = el.getBoundingClientRect();
+    if (r.width === 0) return;
+    var pad = 3;
+    var clash = placed.some(function(p){
+      return r.left < p.right + pad && p.left < r.right + pad && r.top < p.bottom + pad && p.top < r.bottom + pad;
+    });
+    if (clash) el.style.display = 'none';
+    else placed.push({ left:r.left, right:r.right, top:r.top, bottom:r.bottom });
+  });
+}
+function applyZoomVisibility(){
+  var z = map.getZoom();
+  RM.forEach(function(o){
+    var vis = showLabels && z >= o.r.z[0] && z <= o.r.z[1];
+    if (vis) { if (!markerLayer.hasLayer(o.m)) markerLayer.addLayer(o.m); }
+    else if (markerLayer.hasLayer(o.m)) markerLayer.removeLayer(o.m);
+  });
+  declutter();
+}
+map.on('zoomend moveend', applyZoomVisibility);
+
+/* ============ canvas overlay: smoke particles ============ */
+var fx = document.getElementById('fx'), fxc = fx.getContext('2d');
+function sizeFx(){
+  var r = fx.parentElement.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio||1);
+  fx.width = Math.round(r.width*dpr); fx.height = Math.round(r.height*dpr);
+  fx.style.width = r.width+'px'; fx.style.height = r.height+'px';
+  fxc.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', function(){ sizeFx(); });
+
+var particles = [];
+var MAXP = 260;
+var CROSS = 6.5;                       // seconds for a particle to cross the tier's extent
+function tierReach(){ return TIERS[state.tier].field.reach; }
+function spawn(){
+  var jitter = 0.004;
+  particles.push({
+    lat: SMELTER.lat + (Math.random()-0.5)*jitter,
+    lon: SMELTER.lon + (Math.random()-0.5)*jitter,
+    travel: 0, age: 0, life: CROSS * (0.7 + Math.random()*0.55),
+    r0: 1.5 + Math.random()*2.5, wob: Math.random()*Math.PI*2
+  });
+}
+
+/* seed a plume that is already blowing on first paint */
+function seedPlume(){
+  particles.length = 0;
+  var w = WIND[Math.floor(state.hour) % HOURS];
+  var dirTo = transportBearing(w.dirFrom);
+  var reach = tierReach();
+  for (var i=0;i<MAXP;i++){
+    var f = Math.pow(Math.random(), 0.7);
+    var pos = destKm(SMELTER.lat, SMELTER.lon, dirTo + (Math.random()-0.5)*34, f*reach);
+    particles.push({ lat:pos[0], lon:pos[1], travel:f*reach, age:f*CROSS, life:CROSS * (0.7 + Math.random()*0.55),
+                     r0:1.5 + Math.random()*2.5, wob:Math.random()*Math.PI*2 });
+  }
+}
+
+var state = { tier:'1', hour:0, playing:true, speed:24, cloud:true, zones:true,
+              schoolHours:0, playStartWall:0, playStartHour:0 };
+function rebase(){ state.playStartWall = Date.now(); state.playStartHour = state.hour; }
+
+function setTier(k){
+  state.tier = k;
+  Object.keys(zoneGroups).forEach(function(kk){ if (map.hasLayer(zoneGroups[kk])) map.removeLayer(zoneGroups[kk]); });
+  if (state.zones) zoneGroups[k].addTo(map);
+  var t = TIERS[k];
+  document.getElementById('tierLbl').innerHTML = t.label;
+  document.getElementById('tierNum').textContent = t.num;
+  document.getElementById('tierNum').style.color = t.hot;
+  document.getElementById('tierRange').textContent = t.range;
+  document.getElementById('tierBody').innerHTML = t.body;
+  document.getElementById('tierCite').innerHTML = t.cite;
+  document.querySelectorAll('#tierBtns .tierbtn').forEach(function(b){
+    b.setAttribute('aria-pressed', String(b.dataset.k === k));
+  });
+  var lg = document.getElementById('legend');
+  lg.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><span style="width:11px;height:11px;background:' + t.accent + ';transform:rotate(45deg);border:1.5px solid #FBF8F1;flex:none"></span> Proposed smelter</div>' +
+    t.bands.slice().reverse().map(function(b){
+      return '<div style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:10px;background:' + b.color +
+        ';opacity:' + Math.min(1, b.op*2.4) + ';border:1px solid ' + b.color + ';flex:none"></span> ' + b.label + '</div>';
+    }).join('');
+  map.setView(t.view[0], t.view[1], { animate:false });
+  applyZoomVisibility();
+  seedPlume();
+  frame();
+}
+
+/* tier buttons */
+var tierBtns = document.getElementById('tierBtns');
+[['1','Gaseous &amp; particulate fluoride','Proposed 0.64 lb / t Al · 37% lower','#C25230'],
+ ['2','SO₂ &amp; NOx','Separate review · regional illustration','#8B7FB8'],
+ ['3','Perfluorocarbons','CF₄ / C₂F₆ · long-lived gases','#6DB3C4']].forEach(function(row){
+  var b = document.createElement('button');
+  b.className = 'tierbtn'; b.dataset.k = row[0]; b.type = 'button';
+  b.innerHTML = '<span class="sw" style="background:' + row[3] + '"></span><span><span class="t">' + row[1] + '</span><span class="s">' + row[2] + '</span></span>';
+  b.addEventListener('click', function(){ setTier(row[0]); });
+  tierBtns.appendChild(b);
+});
+
+/* layer toggles */
+function bindTog(id, fn){
+  var el = document.getElementById(id);
+  el.addEventListener('change', function(){
+    el.parentElement.classList.toggle('on', el.checked);
+    fn(el.checked);
+  });
+}
+bindTog('tgCloud', function(v){ state.cloud = v; });
+bindTog('tgZones', function(v){
+  state.zones = v;
+  Object.keys(zoneGroups).forEach(function(kk){ if (map.hasLayer(zoneGroups[kk])) map.removeLayer(zoneGroups[kk]); });
+  if (v) zoneGroups[state.tier].addTo(map);
+});
+bindTog('tgLabels', function(v){ showLabels = v; applyZoomVisibility(); });
+
+/* timeline */
+var playBtn = document.getElementById('playBtn');
+playBtn.addEventListener('click', function(){
+  state.playing = !state.playing;
+  if (state.playing) rebase();
+  playBtn.textContent = state.playing ? '❚❚' : '▶';
+  playBtn.setAttribute('aria-label', state.playing ? 'Pause the year' : 'Play the year');
+  frame();
+  if (window.__piEnsure) window.__piEnsure();
+});
+document.querySelectorAll('.tbtn[data-sp]').forEach(function(b){
+  b.addEventListener('click', function(){
+    state.speed = Number(b.dataset.sp);
+    rebase();
+    document.querySelectorAll('.tbtn[data-sp]').forEach(function(x){ x.classList.toggle('on', x === b); });
+  });
+});
+document.getElementById('resetBtn').addEventListener('click', function(){
+  state.hour = 0; state.schoolHours = 0; state.playing = false;
+  rebase();
+  playBtn.textContent = '▶'; playBtn.setAttribute('aria-label', 'Play the year'); seedPlume(); frame();
+});
+var rail = document.getElementById('tlRail');
+rail.addEventListener('click', function(ev){
+  var r = rail.getBoundingClientRect();
+  state.hour = Math.max(0, Math.min(HOURS-1, ((ev.clientX - r.left)/r.width) * HOURS));
+  rebase();
+  frame();
+});
+
+/* wind rose widget */
+var roseSvg = document.getElementById('rose');
+(function drawRose(){
+  var s = '<circle r="44" fill="rgba(239,233,220,.03)" stroke="rgba(239,233,220,.14)"/>' +
+          '<circle r="29" fill="none" stroke="rgba(239,233,220,.08)"/>' +
+          '<circle r="15" fill="none" stroke="rgba(239,233,220,.08)"/>';
+  for (var i=0;i<16;i++){
+    var v = ROSE[i], len = 44*(0.16 + 0.84*v);
+    var a0 = (i*22.5 - 11.25 - 90)*D2R, a1 = (i*22.5 + 11.25 - 90)*D2R;
+    var col = v>0.7 ? '#C25230' : v>0.42 ? '#D98B45' : v>0.18 ? '#9E8A5E' : 'rgba(154,148,138,.45)';
+    s += '<path d="M0,0 L' + (Math.cos(a0)*len).toFixed(2) + ',' + (Math.sin(a0)*len).toFixed(2) +
+         ' A' + len + ',' + len + ' 0 0 1 ' + (Math.cos(a1)*len).toFixed(2) + ',' + (Math.sin(a1)*len).toFixed(2) +
+         ' Z" fill="' + col + '" opacity=".95"/>';
+  }
+  s += '<text x="0" y="-46" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#EFE9DC">N</text>';
+  s += '<text x="48" y="3" font-family="IBM Plex Mono" font-size="7.5" fill="#7C7669">E</text>';
+  s += '<text x="0" y="51" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="#7C7669">S</text>';
+  s += '<text x="-48" y="3" text-anchor="end" font-family="IBM Plex Mono" font-size="7.5" fill="#7C7669">W</text>';
+  s += '<g id="needle"></g>';
+  roseSvg.innerHTML = s;
+})();
+
+var PTS16 = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+function compass(d){ return PTS16[Math.round(((d%360)+360)%360 / 22.5) % 16]; }
+function transportBearing(windFrom){ return ((windFrom + 180) % 360 + 360) % 360; }
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var MD = [31,28,31,30,31,30,31,31,30,31,30,31];
+function dateLabel(hour){
+  var day = Math.floor(hour/24), hr = Math.floor(hour%24), m = 0;
+  while (day >= MD[m]) { day -= MD[m]; m++; }
+  return MON[m] + ' ' + (day+1) + ' · ' + (hr<10?'0':'') + hr + ':00';
+}
+
+var elDir = document.getElementById('wDir'), elSpd = document.getElementById('wSpd'),
+    elTo = document.getElementById('wTo'), elPct = document.getElementById('wPct'),
+    elDate = document.getElementById('tlDate'), elFill = document.getElementById('tlFill'),
+    elHours = document.getElementById('hoursOut');
+
+var SCHOOL_BEARING = bearingBetween(SMELTER.lat, SMELTER.lon, SCHOOL.lat, SCHOOL.lon);
+var schoolBearingHours = new Uint16Array(HOURS + 1);
+for (var wh = 0; wh < HOURS; wh++) {
+  schoolBearingHours[wh + 1] = schoolBearingHours[wh] + (angDiff(transportBearing(WIND[wh].dirFrom), SCHOOL_BEARING) <= 25 ? 1 : 0);
+}
+
+/* ============ animation ============ */
+var last = performance.now();
+function frame(){
+  try { frameBody(performance.now()); }
+  catch (err) { if (!window.__fxErr) { window.__fxErr = String(err && err.stack || err); console.error('map frame:', err); } }
+}
+function frameBody(now){
+  var dt = Math.min(80, Math.max(0, now - last));
+  last = now;
+  var t = TIERS[state.tier];
+
+  if (state.playing){
+    var prev = Math.floor(state.hour);
+    // clock derives from wall time, so sparse or throttled frames stay accurate
+    state.hour = state.playStartHour + ((Date.now() - state.playStartWall) / 1000) * state.speed;
+    if (state.hour >= HOURS){
+      state.hour = state.hour % HOURS;
+      state.playStartHour = state.hour;
+      state.playStartWall = Date.now();
+      prev = -1;
+    }
+    var cur = Math.floor(state.hour);
+    for (var h = prev+1; h <= cur && h < HOURS; h++){
+      var to = transportBearing(WIND[h].dirFrom);
+      if (angDiff(to, SCHOOL_BEARING) <= 25) state.schoolHours++;
+    }
+  }
+
+  var w = WIND[Math.floor(state.hour) % HOURS];
+  var dirTo = transportBearing(w.dirFrom);
+
+  // Keep the clock and wind readouts synchronized even if canvas rendering fails.
+  elDate.textContent = dateLabel(state.hour) + ' · Day ' + (Math.floor(state.hour / 24) + 1) + ' / 365';
+  elFill.style.width = (state.hour/HOURS*100).toFixed(2) + '%';
+  elDir.textContent = compass(w.dirFrom) + ' (' + Math.round(w.dirFrom) + '°)';
+  elSpd.textContent = (w.speed*2.237).toFixed(1) + ' mph';
+  elTo.textContent = 'toward ' + compass(dirTo);
+  elPct.textContent = Math.round(state.hour/HOURS*100) + '%';
+  elHours.textContent = schoolBearingHours[Math.floor(state.hour)].toLocaleString();
+
+  /* --- particles --- */
+  if (state.cloud){
+    // at high playback speeds the wind direction rotates many model-hours per
+    // frame; thin the live puff so the rapidly-sprayed particles can't pile up
+    // over the stack and saturate to a bright white blob under screen blending
+    var densMul = state.speed >= 120 ? 0.5 : (state.speed >= 24 ? 0.8 : 1);
+    var want = Math.round(MAXP * Math.min(1, 0.35 + w.speed/9) * densMul);
+    while (particles.length < want) spawn();
+    // travel is scaled to the active tier so smoke never outruns its own
+    // footprint, and to playback speed so puffs actually leave the stack at
+    // fast-forward instead of clustering at the source
+    var spF = state.playing ? Math.max(1, Math.min(6, state.speed/12)) : 1;
+    var advance = (tierReach() / CROSS) * (dt/1000) * (0.55 + w.speed/9) * spF;
+    for (var i = particles.length-1; i >= 0; i--){
+      var p = particles[i];
+      p.age += dt/1000;
+      p.wob += dt/900;
+      var jitter = Math.sin(p.wob)*16;
+      p.travel += advance * (0.75 + 0.5*Math.random());
+      // This instantaneous illustration follows the displayed wind, not a historical particle trajectory.
+      var np = destKm(SMELTER.lat, SMELTER.lon, dirTo + jitter, p.travel);
+      p.lat = np[0]; p.lon = np[1];
+      if (p.age > p.life) particles.splice(i,1);
+    }
+  } else if (particles.length) particles.length = 0;
+
+  /* --- draw --- */
+  fxc.setTransform(1,0,0,1,0,0);
+  fxc.clearRect(0,0,fx.width,fx.height);
+  var dpr = Math.min(2, window.devicePixelRatio||1);
+  fxc.setTransform(dpr,0,0,dpr,0,0);
+
+
+  if (state.cloud && particles.length){
+    fxc.save();
+    fxc.globalCompositeOperation = 'screen';
+    var zf = Math.pow(2, map.getZoom() - t.view[1]);
+    for (var j=0;j<particles.length;j++){
+      var q = particles[j];
+      var pt = map.latLngToContainerPoint([q.lat, q.lon]);
+      if (pt.x < -80 || pt.y < -80 || pt.x > fx.width || pt.y > fx.height) continue;
+      var lifeF = q.age/q.life;
+      var rad = (q.r0 + lifeF*9) * Math.max(0.35, Math.min(3.2, zf));
+      var alpha = 0.22 * (1-lifeF) * (1-lifeF) * (state.speed >= 120 ? 0.6 : (state.speed >= 24 ? 0.85 : 1));
+      var g = fxc.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, rad);
+      g.addColorStop(0, 'rgba(' + t.particle + ',' + alpha.toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(' + t.particle + ',0)');
+      fxc.fillStyle = g;
+      fxc.beginPath(); fxc.arc(pt.x, pt.y, rad, 0, Math.PI*2); fxc.fill();
+    }
+    fxc.restore();
+  }
+
+  var needle = document.getElementById('needle');
+  if (needle){
+    var a = (dirTo - 90)*D2R, nx = Math.cos(a)*40, ny = Math.sin(a)*40;
+    needle.innerHTML = '<line x1="0" y1="0" x2="' + nx.toFixed(2) + '" y2="' + ny.toFixed(2) + '" stroke="#FBF8F1" stroke-width="1.6" stroke-linecap="round" opacity=".95"/>' +
+                       '<circle cx="' + nx.toFixed(2) + '" cy="' + ny.toFixed(2) + '" r="2.6" fill="#FBF8F1"/>';
+  }
+}
+
+/* ============ go ============ */
+sizeFx();
+setTier('1');
+applyZoomVisibility();
+map.whenReady(function(){ sizeFx(); frame(); applyZoomVisibility(); });
+map.on('move zoom', function(){ frame(); });
+setTimeout(function(){ sizeFx(); frame(); applyZoomVisibility(); }, 400);
+setTimeout(applyZoomVisibility, 1400);
+
+/* self-rearming render loop with a keepalive, so a stalled timer cannot freeze the map */
+var lastTickAt = Date.now(), tickTimer = null;
+function tick(){
+  lastTickAt = Date.now();
+  frame();
+  tickTimer = setTimeout(tick, 33);
+}function ensureRunning(){
+  if (Date.now() - lastTickAt > 400){
+    if (tickTimer) clearTimeout(tickTimer);
+    tick();
+  }
+}
+setInterval(ensureRunning, 1000);
+window.__piEnsure = ensureRunning;
+document.addEventListener('visibilitychange', ensureRunning);
+window.addEventListener('focus', ensureRunning);
+// any interaction re-arms the loop — survives hosts that clear load-time timers
+['pointermove','pointerdown','click','wheel','scroll','keydown','touchstart'].forEach(function(ev){
+  window.addEventListener(ev, ensureRunning, { passive:true, capture:true });
+});
+map.on('move zoom mouseover', ensureRunning);
+tick();
+})();
+</script>
+</body></html>

@@ -1,0 +1,49 @@
+PROTECT INOLA — SOURCE AUDIT
+Reviewed October 19, 2026. Applies to the canvas homepage, not the unchanged live website.
+
+CORRECTIONS AND VERIFICATION
+1. Capacity: 750,000 metric tons per year is OPA's stated capacity, not an approved limit. OPA's September 23 release also states a 441-acre location.
+Source: https://oklahomaprimaryaluminum.com/en/news/new-economic-impact-study-oklahoma-primary-aluminum-to-generate-49-billion-for-oklahoma
+
+2. Fluoride: corrected the canvas unit from metric ton to U.S. ton. OPA's September 3 release specifies a proposed maximum potline fluoride intensity of 0.64 pounds per U.S. ton. Attribute this to OPA; do not treat it as an approved permit limit, an annual total or a modeled exposure.
+Source: https://oklahomaprimaryaluminum.com/en/news/oklahoma-primary-aluminum-submits-environmental-plan-to-odeq
+
+3. Power: removed the 1,000+ MW headline statistic. Public Radio Tulsa's October 6 article says 1,000 MW is about 1.2 GW, an inconsistent conversion (1,000 MW equals 1 GW). Retained the sourced question about the unfinalized power agreement. No smelter-specific household bill increase is established by these sources.
+Sources:
+https://www.publicradiotulsa.org/local-regional/2026-10-06/economics-professor-weighs-in-on-inola-smelter-economic-impact-report
+https://www.oklahomaprimaryaluminum.com/en/about-us/answers-center
+
+4. Permit: DEQ's project page lists the air application under review and BACT, dispersion-modeling and draft-permit meetings as TBD. Check again before publication; this audit does not establish future deadlines.
+https://oklahoma.gov/deq/aluminum-smelter-inola.html
+
+5. DEQ letter: October 7 request seeks substantiation of model-derived emissions. It expressly describes ordinary iterative review, not rejection of the approach. The letter addresses air quality, soils and vegetation. No statement of inevitable injury is used on this homepage.
+https://ewscripps.brightspotcdn.com/84/e8/7f3ded854712801bfa46f10cc927/permitspublicdocument.pdf
+
+6. Legal update: FOX23's report republished by KRMG on October 16 describes the October 15 vote authorizing legal action. It had not confirmed filing as of Thursday afternoon. Do not equate authorization with a filed lawsuit or a court ruling.
+https://krmg.com/2026/10/16/tulsa-ports-authorizes-lawsuit-against-inola-over-development-restrictions/
+
+7. Donation: phone 918-584-1600 independently matches the firm's site. Donation purpose/instructions are attributed to Protect Inola, not independently certified by the firm. Copy says to call and ask about contributing.
+https://barrowgrimm.com/business-services/
+https://protectinola.com/
+
+PHOTO
+Real source photograph: Tulsa Ports, Inola aerial.
+https://tulsaports.com/locate-here/tulsa-port-of-inola/
+https://tulsaports.com/wp-content/uploads/2021/09/Inola.jpg
+Original local copy: images/tulsaports.com/45038e19805e3c78.jpg
+Edited asset: images/inola-smelter-composite-v3.png
+AI compositing added a hypothetical smelter and gray plumes. Original is retained. The result is not a surveyed placement, actual facility design, scale model, dispersion forecast, or documentary photograph. Source credit does not establish image reuse rights; no open license was verified.
+
+READABILITY
+Ivory #F7F3EA; headings #18392E; body #424A42; accents #983B24; action buttons #A33D25 with white type.
+Computed contrast: headings 11.40:1; body 8.28:1; accents 6.35:1; white button text 6.46:1.
+Main body paragraphs 20–22px; source labels generally 18px; visible text minimum 16px. Paragraph line height 1.5. Text sits on solid backgrounds.
+Reference: https://www.w3.org/WAI/older-users/
+Canvas checks passed for clipping and collapsed sizes. This is not a complete accessibility certification: responsive reflow, keyboard access, semantic markup, screen readers and browser zoom must be checked in implementation.
+The canvas tool did not persist text href properties in readback. Source URLs are recorded here and in node context for implementation; displayed link labels are design elements.
+
+IMAGE GENERATION
+Tool: built-in image_gen, edit mode.
+Final prompt:
+Use case: compositing. Edit target: the attached real aerial photograph of the Tulsa Port of Inola, sourced from Tulsa Ports. Create a clearly illustrative advocacy photomontage for a website, not a scientific visualization. Preserve the original camera angle, horizon, tree lines, waterways, roads, fields and existing industrial building at the far upper right. Do not invent a town or houses. Add a hypothetical aluminum smelter complex with long low potline buildings and several exhaust stacks in the open field in the middle-right of the image; keep the existing factory visually distinct and unchanged. Add visible gray plumes originating only from the new stacks, drifting across a portion of the sky; not fire, explosion or a disaster. Match daylight and perspective. Retain the recognizable water channel in the foreground and natural colors. The added facility location, scale and plume are artistic and do not represent the actual proposed plan. No text or logos. Keep the original wide landscape composition and recognizable details intact.
+
